@@ -8,6 +8,7 @@ from logmagix import Logger
 
 
 class CyberTemp:
+
     def __init__(self, api_key: str, debug: bool = True) -> None:
         if not api_key:
             raise ValueError("API key is required. Get one at https://cybertemp.xyz/pricing")
@@ -132,3 +133,88 @@ class CyberTemp:
         except Exception as e:
             self.log.failure(f"Error getting plan info: {str(e)}")
         return None
+
+    
+    def delete_email(self, email_id: str) -> bool:
+        """
+        DELETE /api/email/{emailId} - Deletes a specific email by its ID.
+        Returns True if deleted, False otherwise.
+        """
+        self.debug_log(f"Deleting email with id {email_id}")
+        try:
+            response = self.session.delete(f"https://www.cybertemp.xyz/api/email/{email_id}")
+            if response.status_code == 200:
+                return True
+            else:
+                self.log.failure(f"Failed to delete email: {response.text}, {response.status_code}")
+        except Exception as e:
+            self.log.failure(f"Error deleting email: {str(e)}")
+        return False
+
+    def delete_inbox(self, email_address: str) -> bool:
+        """
+        DELETE /api/inbox/{emailAddress} - Deletes an entire inbox and all its emails.
+        Returns True if deleted, False otherwise.
+        """
+        self.debug_log(f"Deleting inbox {email_address}")
+        try:
+            response = self.session.delete(f"https://www.cybertemp.xyz/api/inbox/{email_address}")
+            if response.status_code == 200:
+                return True
+            else:
+                self.log.failure(f"Failed to delete inbox: {response.text}, {response.status_code}")
+        except Exception as e:
+            self.log.failure(f"Error deleting inbox: {str(e)}")
+        return False
+
+    def list_user_inboxes(self) -> Optional[Dict]:
+        """
+        GET /api/user/inboxes - Returns a list of all inboxes created by the authenticated user.
+        """
+        self.debug_log("Listing user inboxes")
+        try:
+            response = self.session.get("https://www.cybertemp.xyz/api/user/inboxes")
+            if response.status_code == 200:
+                return response.json()
+            else:
+                self.log.failure(f"Failed to list user inboxes: {response.text}, {response.status_code}")
+        except Exception as e:
+            self.log.failure(f"Error listing user inboxes: {str(e)}")
+        return None
+
+    def delete_user_inbox(self, inbox_address: str) -> bool:
+        """
+        DELETE /api/user/inboxes - Deletes a user inbox and all its emails. Requires JSON body: {"inbox_address": ...}
+        Returns True if deleted, False otherwise.
+        """
+        self.debug_log(f"Deleting user inbox {inbox_address}")
+        try:
+            response = self.session.delete(
+                "https://www.cybertemp.xyz/api/user/inboxes",
+                json={"inbox_address": inbox_address},
+                headers={"Content-Type": "application/json", **self.session.headers}
+            )
+            if response.status_code == 200:
+                return True
+            else:
+                self.log.failure(f"Failed to delete user inbox: {response.text}, {response.status_code}")
+        except Exception as e:
+            self.log.failure(f"Error deleting user inbox: {str(e)}")
+        return False
+
+    def get_private_emails(self, bearer_token: str, email: str) -> Optional[List[Dict]]:
+        """
+        GET /api/private/emails - Fetch emails for a private address using a Bearer token.
+        """
+        self.debug_log(f"Getting private emails for {email}")
+        try:
+            headers = {"Authorization": f"Bearer {bearer_token}"}
+            response = self.session.get(f"https://www.cybertemp.xyz/api/private/emails?email={email}", headers=headers)
+            if response.status_code == 200:
+                return response.json()
+            else:
+                self.log.failure(f"Failed to get private emails: {response.text}, {response.status_code}")
+        except Exception as e:
+            self.log.failure(f"Error getting private emails: {str(e)}")
+        return None
+    

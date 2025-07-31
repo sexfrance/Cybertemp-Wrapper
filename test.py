@@ -1,9 +1,9 @@
+
 from cybertemp import CyberTemp
 
 def main():
-    # Initialize client (with or without API key)
-    client = CyberTemp(debug=True)  # Free tier
-    # client = CyberTemp(api_key="your_api_key_here")  # Premium tier
+    # Initialize client (API key required)
+    client = CyberTemp(api_key="your_api_key_here", debug=True)
 
     # 1. Get available domains
     print("\n=== Available Domains ===")
@@ -29,7 +29,7 @@ def main():
     if emails and len(emails) > 0:
         email_id = emails[0]['id']
         print(f"\n=== Getting Email Content for ID: {email_id} ===")
-        email_content = client.get_email_content_by_id(email_id)
+        email_content = client.get_email_content_by_id(test_email, email_id)
         if email_content:
             print(f"Subject: {email_content['subject']}")
             print(f"Text Content:: {email_content['text']}...")
@@ -51,19 +51,45 @@ def main():
     url = client.extract_url_from_message(
         email=test_email,
         subject_contains="Verification",
-        url_pattern=r'https://[^\s<>"]+',
+        url_pattern=r'https://[^\s<>\"]+',
         max_attempts=5,
         delay_between_retries=1.5
     )
     if url:
         print(f"Extracted URL: {url}")
 
-    # 6. Check API balance (premium only)
-    if hasattr(client, 'api_key') and client.api_key:
-        print("\n=== Checking API Balance ===")
-        balance = client.get_balance()
-        if balance:
-            print(f"Remaining credits: {balance['balance']}")
+    # 6. Get plan info
+    print("\n=== Getting Plan Info ===")
+    plan = client.get_plan()
+    if plan:
+        print(f"Plan info: {plan}")
+
+    # 7. Delete email (if any email exists)
+    if emails and len(emails) > 0:
+        email_id = emails[0]['id']
+        print(f"\n=== Deleting Email ID: {email_id} ===")
+        deleted = client.delete_email(email_id)
+        print(f"Delete email result: {deleted}")
+
+    # 8. Delete inbox
+    print(f"\n=== Deleting Inbox: {test_email} ===")
+    deleted_inbox = client.delete_inbox(test_email)
+    print(f"Delete inbox result: {deleted_inbox}")
+
+    # 9. List user inboxes
+    print("\n=== Listing User Inboxes ===")
+    inboxes = client.list_user_inboxes()
+    print(f"User inboxes: {inboxes}")
+
+    # 10. Delete user inbox
+    print(f"\n=== Deleting User Inbox: {test_email} ===")
+    deleted_user_inbox = client.delete_user_inbox(test_email)
+    print(f"Delete user inbox result: {deleted_user_inbox}")
+
+    # 11. Get private emails (requires bearer token)
+    # print("\n=== Getting Private Emails (Bearer Token) ===")
+    # private_emails = client.get_private_emails(bearer_token="your_bearer_token", email=test_email)
+    # print(f"Private emails: {private_emails}")
 
 if __name__ == "__main__":
     main()

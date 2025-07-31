@@ -4,7 +4,7 @@
     A Python client for interacting with the CyberTemp temporary email service API.
     <br />
     <br />
-    <a href="https://cybertemp.xyz">🌐 Website</a>
+    <a href="https://www.cybertemp.xyz">🌐 Website</a>
     ·
     <a href="#-changelog">📜 ChangeLog</a>
     ·
@@ -14,65 +14,84 @@
 
 ---
 
-### ⚙️ Installation
-
-```bash
-pip install cybertemp
-```
-
-### 🚀 Quick Start
-
-```python
-from cybertemp.cybertemp import CyberTemp
-
-# Initialize (API key required)
-client = CyberTemp(api_key="your_api_key_here", debug=True)
-
-
-# Get available domains
-domains = client.get_domains()
-
-# Check mailbox with retry settings (optional parameters: max_retries, delay_between_retries)
-emails = client.get_email_content("test@cybertemp.xyz", max_retries=3, delay_between_retries=2.0)
-```
-
-
-**API key is now required for all requests.**
-You can purchase an API key here: [CyberTemp Pricing](https://cybertemp.xyz/pricing)
-
-### 📚 API Reference
-
-
-#### Initialization
-```python
-client = CyberTemp(
-    api_key="your_api_key_here",  # Required: API key for all features
-    debug=True                     # Optional: Enable debug logging
-)
-```
 
 #### Available Methods
 
-
 1. **Get Email Content**
 ```python
-emails = client.get_email_content("test@cybertemp.xyz", max_retries=3, delay_between_retries=2.0)  # Optional: max_retries, delay_between_retries
+emails = client.get_email_content("test@cybertemp.xyz", max_retries=3, delay_between_retries=2.0)
 ```
-
 
 2. **Get Email by ID**
 ```python
-email = client.get_email_content_by_id("email_id_here")
+email = client.get_email_content_by_id("test@cybertemp.xyz", "email_id_here")
 ```
-
 
 3. **Get Available Domains**
 ```python
 domains = client.get_domains()
 ```
 
+4. **Search Email by Subject**
+```python
+mail_id = client.get_mail_by_subject(
+    email="test@cybertemp.xyz",
+    subject_contains="Verification",
+    max_attempts=5,
+    delay_between_retries=1.5
+)
+```
+
+5. **Extract URL from Email**
+```python
+url = client.extract_url_from_message(
+    email="test@cybertemp.xyz",
+    subject_contains="Verification",
+    url_pattern=r'https://[^\s<>"']+',
+    max_attempts=5,
+    delay_between_retries=1.5
+)
+```
+
+6. **Get Plan Info**
+```python
+plan = client.get_plan()
+```
+
+7. **Delete Email**
+```python
+success = client.delete_email("email_id_here")
+```
+
+8. **Delete Inbox**
+```python
+success = client.delete_inbox("test@cybertemp.xyz")
+```
+
+9. **List User Inboxes**
+```python
+inboxes = client.list_user_inboxes()
+```
+
+10. **Delete User Inbox**
+```python
+success = client.delete_user_inbox("test@cybertemp.xyz")
+```
+
+11. **Get Private Emails (Bearer Token)**
+```python
+private_emails = client.get_private_emails(bearer_token="your_bearer_token", email="test@cybertemp.xyz")
+```
+```
+
+3. **Get Available Domains**
+
+```python
+domains = client.get_domains()
+```
 
 4. **Search Email by Subject**
+
 ```python
 mail_id = client.get_mail_by_subject(
     email="test@cybertemp.xyz",
@@ -82,8 +101,8 @@ mail_id = client.get_mail_by_subject(
 )
 ```
 
-
 5. **Extract URL from Email**
+
 ```python
 url = client.extract_url_from_message(
     email="test@cybertemp.xyz",
@@ -94,13 +113,11 @@ url = client.extract_url_from_message(
 )
 ```
 
-
 6. **Check API Balance**
+
 ```python
 balance = client.get_balance()
 ```
-
-
 
 ### 💳 Pricing & Plans
 
