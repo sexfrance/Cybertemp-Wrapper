@@ -23,95 +23,116 @@ pip install cybertemp
 ### 🚀 Quick Start
 
 ```python
-from cybertemp.cybertemp import CyberTemp
+from cybertemp import CyberTemp
 
-# Initialize (free tier)
-client = CyberTemp()
 
-# Or with API key (premium)
-client = CyberTemp(api_key="your_api_key_here")
+# Initialize (API key required)
+client = CyberTemp(api_key="your_api_key_here", debug=True)
+
 
 # Get available domains
 domains = client.get_domains()
 
-# Check mailbox
-emails = client.get_email_content("test@cybertemp.xyz")
+# Check mailbox with retry settings (optional parameters: max_retries, delay_between_retries)
+emails = client.get_email_content("test@cybertemp.xyz", max_retries=3, delay_between_retries=2.0)
 ```
 
-You can purchase an api key here: https://cybertemp.xyz/pricing
+
+**API key is now required for all requests.**
+You can purchase an API key here: [CyberTemp Pricing](https://cybertemp.xyz/pricing)
 
 ### 📚 API Reference
+
 
 #### Initialization
 ```python
 client = CyberTemp(
-    debug=True,           # Enable debug logging
-    api_key=None,         # Optional API key for premium features
+    api_key="your_api_key_here",  # Required: API key for all features
+    debug=True                     # Optional: Enable debug logging
 )
 ```
 
 #### Available Methods
 
+
 1. **Get Email Content**
 ```python
-emails = client.get_email_content("test@cybertemp.xyz")
+emails = client.get_email_content("test@cybertemp.xyz", max_retries=3, delay_between_retries=2.0)  # Optional: max_retries, delay_between_retries
 ```
+
 
 2. **Get Email by ID**
 ```python
 email = client.get_email_content_by_id("email_id_here")
 ```
 
+
 3. **Get Available Domains**
 ```python
 domains = client.get_domains()
 ```
+
 
 4. **Search Email by Subject**
 ```python
 mail_id = client.get_mail_by_subject(
     email="test@cybertemp.xyz",
     subject_contains="Verification",
-    max_attempts=10
+    max_attempts=5,                # Optional
+    delay_between_retries=1.5       # Optional
 )
 ```
+
 
 5. **Extract URL from Email**
 ```python
 url = client.extract_url_from_message(
     email="test@cybertemp.xyz",
     subject_contains="Verification",
-    url_pattern=r'https://[^\s<>"]+'
+    url_pattern=r'https://[^\s<>"']+',
+    max_attempts=5,                # Optional
+    delay_between_retries=1.5       # Optional
 )
 ```
 
-6. **Check API Balance** (Premium)
+
+6. **Check API Balance**
 ```python
 balance = client.get_balance()
 ```
 
-### 💳 Premium Features
 
-- No rate limiting
-- API key support
-- Credit system
-- Priority support
+
+### 💳 Pricing & Plans
+
+CyberTemp offers several subscription plans:
+
+- **Free Tier**: No API key required, 2-second delay, 10 req/sec
+- **Eco Plan**: €1.99/month, no delay, 20 req/sec
+- **Core Plan**: €2.99/month, no delay, 50 req/sec
+- **Elite Plan**: €4.99/month, no delay, unlimited requests
+
+All paid plans require an API key. See [CyberTemp Pricing](https://cybertemp.xyz/pricing) for details and to purchase a key.
 
 ### ⚠️ Rate Limits
 
-- Free tier: 1-second delay between requests
-- Premium tier: No delays, pay-per-use
+- All requests require an API key (except Free tier)
+- Free tier: 2-second delay between requests, 10 req/sec
+- Paid tiers: No delay, higher rate limits
 
 ### 📜 ChangeLog
 
 ```diff
-v1.0.0 ⋮ 202-02-14
-! Initial release
+v1.0.1 ⋮ 2025-03-05
++ Added configurable retry and delay options for email checking functions
++ Indicated optional parameters in documentation
 
+v1.0.0 ⋮ 2025-02-14
+! Initial release
 ```
 
 <p align="center">
   <img src="https://img.shields.io/badge/python-3.7+-blue.svg"/>
   <img src="https://img.shields.io/badge/license-MIT-green.svg"/>
-  <img src="https://img.shields.io/badge/version-1.0.0-orange.svg"/>
+  <img src="https://img.shields.io/badge/version-1.0.1-orange.svg"/>
 </p>

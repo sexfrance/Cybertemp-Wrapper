@@ -1,4 +1,4 @@
-from cybertemp.cybertemp import CyberTemp
+from cybertemp import CyberTemp
 
 def main():
     # Initialize client (with or without API key)
@@ -12,9 +12,9 @@ def main():
         print(f"Available domains: {domains}")
 
     # 2. Check emails in a mailbox
-    test_email = "sex@cybertemp.xyz"
+    test_email = "test@cybertemp.xyz"
     print(f"\n=== Checking Mailbox: {test_email} ===")
-    emails = client.get_email_content(test_email)
+    emails = client.get_email_content(test_email, max_retries=3, delay_between_retries=2.0)
     if emails:
         for email in emails:
             print(f"ID: {email['id']}")
@@ -32,14 +32,16 @@ def main():
         email_content = client.get_email_content_by_id(email_id)
         if email_content:
             print(f"Subject: {email_content['subject']}")
-            print(f"Text Content:: {email['text']}...")
-            print(f"Html Content:: {email['html']}...")
+            print(f"Text Content:: {email_content['text']}...")
+            print(f"Html Content:: {email_content['html']}...")
 
     # 4. Search for email with specific subject
     print("\n=== Searching for Verification Email ===")
     mail_id = client.get_mail_by_subject(
         email=test_email,
-        subject_contains="Verification"
+        subject_contains="Verification",
+        max_attempts=5,
+        delay_between_retries=1.5
     )
     if mail_id:
         print(f"Found verification email with ID: {mail_id}")
@@ -49,7 +51,9 @@ def main():
     url = client.extract_url_from_message(
         email=test_email,
         subject_contains="Verification",
-        url_pattern=r'https://[^\s<>"]+'
+        url_pattern=r'https://[^\s<>"]+',
+        max_attempts=5,
+        delay_between_retries=1.5
     )
     if url:
         print(f"Extracted URL: {url}")
