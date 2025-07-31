@@ -23,8 +23,7 @@ pip install cybertemp
 ### 🚀 Quick Start
 
 ```python
-from cybertemp import CyberTemp
-
+from cybertemp.cybertemp import CyberTemp
 
 # Initialize (API key required)
 client = CyberTemp(api_key="your_api_key_here", debug=True)
@@ -134,5 +133,5 @@ v1.0.0 ⋮ 2025-02-14
 <p align="center">
   <img src="https://img.shields.io/badge/python-3.7+-blue.svg"/>
   <img src="https://img.shields.io/badge/license-MIT-green.svg"/>
-  <img src="https://img.shields.io/badge/version-1.0.1-orange.svg"/>
+  <img src="https://img.shields.io/badge/version-1.0.0-orange.svg"/>
 </p>
