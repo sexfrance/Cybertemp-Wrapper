@@ -6,9 +6,7 @@ from functools import wraps
 from typing import Optional, List, Dict, Union, Callable
 from logmagix import Logger
 
-
 class CyberTemp:
-
     def __init__(self, api_key: str, debug: bool = True) -> None:
         if not api_key:
             raise ValueError("API key is required. Get one at https://cybertemp.xyz/pricing")
@@ -106,13 +104,13 @@ class CyberTemp:
                     return message
         return None
 
-    def get_domains(self) -> Optional[List[str]]:
+    def get_domains(self, type: str = None) -> Optional[List[str]]:
         """
         GET /api/getDomains - Fetch all available email domains.
         """
         self.debug_log("Getting domains")
         try:
-            response = self.session.get("https://www.cybertemp.xyz/api/getDomains")
+            response = self.session.get(f"https://www.cybertemp.xyz/api/getDomains?type={type}")
             if response.status_code == 200:
                 return response.json()
             else:
