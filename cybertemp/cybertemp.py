@@ -63,7 +63,6 @@ class CyberTemp:
         return None
 
     def get_message_content(self, email: str, message_id: str) -> Optional[Dict]:
-
         self.debug_log(f"Fetching message {message_id} for {email}")
         messages = self.get_mailbox(email, max_retries=1)
         if messages:
@@ -88,7 +87,6 @@ class CyberTemp:
         return None
 
     def get_email_content(self, email: str, max_retries: int = 5, delay_between_retries: float = 2.0) -> Optional[List[Dict]]:
-
         self.debug_log(f"Getting emails for {email}")
         return self.get_mailbox(email, max_retries, delay_between_retries)
 
@@ -141,7 +139,7 @@ class CyberTemp:
         self.debug_log(f"Deleting email with id {email_id}")
         try:
             response = self.session.delete(f"https://www.cybertemp.xyz/api/email/{email_id}")
-            if response.status_code == 200:
+            if response.status_code == 204:
                 return True
             else:
                 self.log.failure(f"Failed to delete email: {response.text}, {response.status_code}")
@@ -157,7 +155,7 @@ class CyberTemp:
         self.debug_log(f"Deleting inbox {email_address}")
         try:
             response = self.session.delete(f"https://www.cybertemp.xyz/api/inbox/{email_address}")
-            if response.status_code == 200:
+            if response.status_code == 204:
                 return True
             else:
                 self.log.failure(f"Failed to delete inbox: {response.text}, {response.status_code}")
@@ -192,7 +190,7 @@ class CyberTemp:
                 json={"inbox_address": inbox_address},
                 headers={"Content-Type": "application/json", **self.session.headers}
             )
-            if response.status_code == 200:
+            if response.status_code == 204:
                 return True
             else:
                 self.log.failure(f"Failed to delete user inbox: {response.text}, {response.status_code}")
