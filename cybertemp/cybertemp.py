@@ -10,37 +10,37 @@ class CyberTemp:
     def __init__(self, api_key: str, debug: bool = True) -> None:
         if not api_key:
             raise ValueError("API key is required. Get one at https://cybertemp.xyz/pricing")
-        self.debug = debug
-        self.log = Logger()
-        self.session = requests.Session()
-        self.session.headers = {"X-API-KEY": api_key}
+        self.__debug = debug
+        self.__log = Logger()
+        self.__session = requests.Session()
+        self.__session.headers = {"X-API-KEY": api_key.strip()}
 
-    def debug_log(self, func_or_message: Union[Callable, str], *args, **kwargs) -> Callable:
+    def __debug_log(self, func_or_message: Union[Callable, str], *args, **kwargs) -> Callable:
         if callable(func_or_message):
             @wraps(func_or_message)
             def wrapper(*args, **kwargs):
                 result = func_or_message(*args, **kwargs)
-                if self.debug:
-                    self.log.debug(f"{func_or_message.__name__} returned: {result}")
+                if self.__debug:
+                    self.__log.debug(f"{func_or_message.__name__} returned: {result}")
                 return result
             return wrapper
         else:
-            if self.debug:
-                self.log.debug(f"Debug: {func_or_message}")
+            if self.__debug:
+                self.__log.debug(f"Debug: {func_or_message}")
 
     def get_mailbox(self, email: str, max_retries: int = 5, delay_between_retries: float = 2.0) -> Optional[List[Dict]]:
 
-        self.debug_log(f"Checking mailbox for {email}")
+        self.__debug_log(f"Checking mailbox for {email}")
         for attempt in range(max_retries):
             try:
-                response = self.session.get(f'https://www.cybertemp.xyz/api/getMail?email={email}')
-                if response.status_code == 200:
+                response = self.__session.get(f'https://www.cybertemp.xyz/api/getMail?email={email}')
+                if response.ok:
                     return response.json()
                 else:
-                    self.log.failure(f"Failed to check mailbox: {response.text}, {response.status_code}")
+                    self.__log.failure(f"Failed to check mailbox: {response.text}, {response.status_code}")
                     break
-            except Exception as e:
-                self.log.failure(f"Error checking mailbox: {str(e)}")
+            except Exception as error:
+                self.__log.failure(f"Error checking mailbox: {str(error)}")
                 if attempt < max_retries - 1:
                     time.sleep(delay_between_retries * (attempt + 1))
                     continue
@@ -49,21 +49,21 @@ class CyberTemp:
 
     def get_mail_by_subject(self, email: str, subject_contains: str, max_attempts: int = 10, delay_between_retries: float = 1.5) -> Optional[str]:
         attempt = 0
-        self.debug_log(f"Getting message with subject containing '{subject_contains}' for {email}")
+        self.__debug_log(f"Getting message with subject containing '{subject_contains}' for {email}")
         while attempt < max_attempts:
             messages = self.get_mailbox(email, max_retries=1, delay_between_retries=delay_between_retries)
             if messages:
                 for message in messages:
                     if subject_contains in message.get("subject", ""):
-                        self.debug_log(message)
+                        self.__debug_log(message)
                         return message.get("id")
             attempt += 1
             time.sleep(delay_between_retries)
-        self.debug_log(f"No matching message found after {attempt} attempts")
+        self.__debug_log(f"No matching message found after {attempt} attempts")
         return None
 
     def get_message_content(self, email: str, message_id: str) -> Optional[Dict]:
-        self.debug_log(f"Fetching message {message_id} for {email}")
+        self.__debug_log(f"Fetching message {message_id} for {email}")
         messages = self.get_mailbox(email, max_retries=1)
         if messages:
             for message in messages:
@@ -76,7 +76,7 @@ class CyberTemp:
         return None
 
     def extract_url_from_message(self, email: str, subject_contains: str, url_pattern: str, max_attempts: int = 10, delay_between_retries: float = 1.5) -> Optional[str]:
-        self.debug_log(f"Extracting URL for {email}")
+        self.__debug_log(f"Extracting URL for {email}")
         mail_id = self.get_mail_by_subject(email, subject_contains, max_attempts, delay_between_retries)
         if mail_id:
             message = self.get_message_content(email, mail_id)
@@ -87,14 +87,14 @@ class CyberTemp:
         return None
 
     def get_email_content(self, email: str, max_retries: int = 5, delay_between_retries: float = 2.0) -> Optional[List[Dict]]:
-        self.debug_log(f"Getting emails for {email}")
+        self.__debug_log(f"Getting emails for {email}")
         return self.get_mailbox(email, max_retries, delay_between_retries)
 
     def get_email_content_by_id(self, email: str, email_id: str) -> Optional[Dict]:
         """
         Fetch a single email by ID from the mailbox list (deprecated: /api/email/{id}).
         """
-        self.debug_log(f"Getting email with id {email_id} for {email}")
+        self.__debug_log(f"Getting email with id {email_id} for {email}")
         messages = self.get_mailbox(email, max_retries=1)
         if messages:
             for message in messages:
@@ -106,28 +106,28 @@ class CyberTemp:
         """
         GET /api/getDomains - Fetch all available email domains.
         """
-        self.debug_log("Getting domains")
+        self.__debug_log("Getting domains")
         try:
-            response = self.session.get(f"https://www.cybertemp.xyz/api/getDomains?type={type}")
-            if response.status_code == 200:
+            response = self.__session.get(f"https://www.cybertemp.xyz/api/getDomains?type={type}")
+            if response.ok:
                 return response.json()
             else:
-                self.log.failure(f"Failed to get domains: {response.text}, {response.status_code}")
-        except Exception as e:
-            self.log.failure(f"Error getting domains: {str(e)}")
+                self.__log.failure(f"Failed to get domains: {response.text}, {response.status_code}")
+        except Exception as error:
+            self.__log.failure(f"Error getting domains: {str(error)}")
         return None
 
     def get_plan(self) -> Optional[Dict]:
        
-        self.debug_log("Getting plan info")
+        self.__debug_log("Getting plan info")
         try:
-            response = self.session.get("https://www.cybertemp.xyz/api/getPlan")
-            if response.status_code == 200:
+            response = self.__session.get("https://www.cybertemp.xyz/api/getPlan")
+            if response.ok:
                 return response.json()
             else:
-                self.log.failure(f"Failed to get plan info: {response.text}, {response.status_code}")
-        except Exception as e:
-            self.log.failure(f"Error getting plan info: {str(e)}")
+                self.__log.failure(f"Failed to get plan info: {response.text}, {response.status_code}")
+        except Exception as error:
+            self.__log.failure(f"Error getting plan info: {str(error)}")
         return None
 
     
@@ -136,15 +136,15 @@ class CyberTemp:
         DELETE /api/email/{emailId} - Deletes a specific email by its ID.
         Returns True if deleted, False otherwise.
         """
-        self.debug_log(f"Deleting email with id {email_id}")
+        self.__debug_log(f"Deleting email with id {email_id}")
         try:
-            response = self.session.delete(f"https://www.cybertemp.xyz/api/email/{email_id}")
-            if response.status_code == 204:
+            response = self.__session.delete(f"https://www.cybertemp.xyz/api/email/{email_id}")
+            if response.ok:
                 return True
             else:
-                self.log.failure(f"Failed to delete email: {response.text}, {response.status_code}")
-        except Exception as e:
-            self.log.failure(f"Error deleting email: {str(e)}")
+                self.__log.failure(f"Failed to delete email: {response.text}, {response.status_code}")
+        except Exception as error:
+            self.__log.failure(f"Error deleting email: {str(error)}")
         return False
 
     def delete_inbox(self, email_address: str) -> bool:
@@ -152,30 +152,30 @@ class CyberTemp:
         DELETE /api/inbox/{emailAddress} - Deletes an entire inbox and all its emails.
         Returns True if deleted, False otherwise.
         """
-        self.debug_log(f"Deleting inbox {email_address}")
+        self.__debug_log(f"Deleting inbox {email_address}")
         try:
-            response = self.session.delete(f"https://www.cybertemp.xyz/api/inbox/{email_address}")
-            if response.status_code == 204:
+            response = self.__session.delete(f"https://www.cybertemp.xyz/api/inbox/{email_address}")
+            if response.ok:
                 return True
             else:
-                self.log.failure(f"Failed to delete inbox: {response.text}, {response.status_code}")
-        except Exception as e:
-            self.log.failure(f"Error deleting inbox: {str(e)}")
+                self.__log.failure(f"Failed to delete inbox: {response.text}, {response.status_code}")
+        except Exception as error:
+            self.__log.failure(f"Error deleting inbox: {str(error)}")
         return False
 
     def list_user_inboxes(self) -> Optional[Dict]:
         """
         GET /api/user/inboxes - Returns a list of all inboxes created by the authenticated user.
         """
-        self.debug_log("Listing user inboxes")
+        self.__debug_log("Listing user inboxes")
         try:
-            response = self.session.get("https://www.cybertemp.xyz/api/user/inboxes")
-            if response.status_code == 200:
+            response = self.__session.get("https://www.cybertemp.xyz/api/user/inboxes")
+            if response.ok:
                 return response.json()
             else:
-                self.log.failure(f"Failed to list user inboxes: {response.text}, {response.status_code}")
-        except Exception as e:
-            self.log.failure(f"Error listing user inboxes: {str(e)}")
+                self.__log.failure(f"Failed to list user inboxes: {response.text}, {response.status_code}")
+        except Exception as error:
+            self.__log.failure(f"Error listing user inboxes: {str(error)}")
         return None
 
     def delete_user_inbox(self, inbox_address: str) -> bool:
@@ -183,34 +183,34 @@ class CyberTemp:
         DELETE /api/user/inboxes - Deletes a user inbox and all its emails. Requires JSON body: {"inbox_address": ...}
         Returns True if deleted, False otherwise.
         """
-        self.debug_log(f"Deleting user inbox {inbox_address}")
+        self.__debug_log(f"Deleting user inbox {inbox_address}")
         try:
-            response = self.session.delete(
+            response = self.__session.delete(
                 "https://www.cybertemp.xyz/api/user/inboxes",
                 json={"inbox_address": inbox_address},
-                headers={"Content-Type": "application/json", **self.session.headers}
+                headers={"Content-Type": "application/json", **self.__session.headers}
             )
-            if response.status_code == 204:
+            if response.ok:
                 return True
             else:
-                self.log.failure(f"Failed to delete user inbox: {response.text}, {response.status_code}")
-        except Exception as e:
-            self.log.failure(f"Error deleting user inbox: {str(e)}")
+                self.__log.failure(f"Failed to delete user inbox: {response.text}, {response.status_code}")
+        except Exception as error:
+            self.__log.failure(f"Error deleting user inbox: {str(error)}")
         return False
 
     def get_private_emails(self, bearer_token: str, email: str) -> Optional[List[Dict]]:
         """
         GET /api/private/emails - Fetch emails for a private address using a Bearer token.
         """
-        self.debug_log(f"Getting private emails for {email}")
+        self.__debug_log(f"Getting private emails for {email}")
         try:
             headers = {"Authorization": f"Bearer {bearer_token}"}
-            response = self.session.get(f"https://www.cybertemp.xyz/api/private/emails?email={email}", headers=headers)
-            if response.status_code == 200:
+            response = self.__session.get(f"https://www.cybertemp.xyz/api/private/emails?email={email}", headers=headers)
+            if response.ok:
                 return response.json()
             else:
-                self.log.failure(f"Failed to get private emails: {response.text}, {response.status_code}")
-        except Exception as e:
-            self.log.failure(f"Error getting private emails: {str(e)}")
+                self.__log.failure(f"Failed to get private emails: {response.text}, {response.status_code}")
+        except Exception as error:
+            self.__log.failure(f"Error getting private emails: {str(error)}")
         return None
     
