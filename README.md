@@ -1,6 +1,6 @@
 <div align="center">
-  <h2 align="center">CyberTemp API Client</h2>
-  <p align="center">
+  <h2>CyberTemp API Client</h2>
+  <p>
     A Python client for interacting with the CyberTemp temporary email service API.
     <br />
     <br />
@@ -14,26 +14,29 @@
 
 ---
 
-
 #### Available Methods
 
 1. **Get Email Content**
-```python
+
+```py
 emails = client.get_email_content("test@cybertemp.xyz", max_retries=3, delay_between_retries=2.0)
 ```
 
-2. **Get Email by ID**
-```python
+1. **Get Email by ID**
+
+```py
 email = client.get_email_content_by_id("test@cybertemp.xyz", "email_id_here")
 ```
 
-3. **Get Available Domains**
-```python
+1. **Get Available Domains**
+
+```py
 domains = client.get_domains()
 ```
 
-4. **Search Email by Subject**
-```python
+1. **Search Email by Subject**
+
+```py
 mail_id = client.get_mail_by_subject(
     email="test@cybertemp.xyz",
     subject_contains="Verification",
@@ -42,8 +45,9 @@ mail_id = client.get_mail_by_subject(
 )
 ```
 
-5. **Extract URL from Email**
-```python
+1. **Extract URL from Email**
+
+```py
 url = client.extract_url_from_message(
     email="test@cybertemp.xyz",
     subject_contains="Verification",
@@ -53,46 +57,52 @@ url = client.extract_url_from_message(
 )
 ```
 
-6. **Get Plan Info**
-```python
+1. **Get Plan Info**
+
+```py
 plan = client.get_plan()
 ```
 
-7. **Delete Email**
-```python
+1. **Delete Email**
+
+```py
 success = client.delete_email("email_id_here")
 ```
 
-8. **Delete Inbox**
-```python
+1. **Delete Inbox**
+
+```py
 success = client.delete_inbox("test@cybertemp.xyz")
 ```
 
-9. **List User Inboxes**
-```python
+1. **List User Inboxes**
+
+```py
 inboxes = client.list_user_inboxes()
 ```
 
-10. **Delete User Inbox**
-```python
+1. **Delete User Inbox**
+
+```py
 success = client.delete_user_inbox("test@cybertemp.xyz")
 ```
 
-11. **Get Private Emails (Bearer Token)**
-```python
+1. **Get Private Emails (Bearer Token)**
+
+```py
 private_emails = client.get_private_emails(bearer_token="your_bearer_token", email="test@cybertemp.xyz")
 ```
 ```
 
-3. **Get Available Domains**
+1. **Get Available Domains**
 
-```python
+```py
 domains = client.get_domains()
 ```
 
 4. **Search Email by Subject**
 
-```python
+```py
 mail_id = client.get_mail_by_subject(
     email="test@cybertemp.xyz",
     subject_contains="Verification",
@@ -103,11 +113,11 @@ mail_id = client.get_mail_by_subject(
 
 5. **Extract URL from Email**
 
-```python
+```py
 url = client.extract_url_from_message(
     email="test@cybertemp.xyz",
     subject_contains="Verification",
-    url_pattern=r'https://[^\s<>"']+',
+    url_pattern=r"""https://[^\s<>"']+""",
     max_attempts=5,                # Optional
     delay_between_retries=1.5       # Optional
 )
@@ -115,7 +125,7 @@ url = client.extract_url_from_message(
 
 6. **Check API Balance**
 
-```python
+```py
 balance = client.get_balance()
 ```
 
@@ -150,5 +160,5 @@ v1.0.0 ⋮ 2025-02-14
 <p align="center">
   <img src="https://img.shields.io/badge/python-3.7+-blue.svg"/>
   <img src="https://img.shields.io/badge/license-MIT-green.svg"/>
-  <img src="https://img.shields.io/badge/version-1.0.0-orange.svg"/>
+  <img src="https://img.shields.io/badge/version-1.0.1-orange.svg"/>
 </p>
