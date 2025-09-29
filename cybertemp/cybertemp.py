@@ -129,6 +129,25 @@ class CyberTemp:
         except Exception as error:
             self.__log.failure(f"Error getting plan info: {str(error)}")
         return None
+    
+    def get_health(self) -> dict:
+        """
+        GET /health - Check CyberTemp API health status.
+        Returns a dict with status or error/reason.
+        """
+        self.__debug_log("Checking API health status")
+        try:
+            response = self.__session.get("https://www.cybertemp.xyz/health")
+            if response.status_code == 200:
+                return response.json()
+            elif response.status_code == 500:
+                return response.json()
+            else:
+                self.__log.failure(f"Unexpected health status: {response.text}, {response.status_code}")
+                return {"error": "Unexpected response", "reason": response.text}
+        except Exception as error:
+            self.__log.failure(f"Error checking health: {str(error)}")
+            return {"error": "API unavailable", "reason": str(error)}
 
     
     def delete_email(self, email_id: str) -> bool:
