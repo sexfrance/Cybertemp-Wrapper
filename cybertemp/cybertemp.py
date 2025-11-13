@@ -33,7 +33,7 @@ class CyberTemp:
         self.__debug_log(f"Checking mailbox for {email}")
         for attempt in range(max_retries):
             try:
-                response = self.__session.get(f'https://www.cybertemp.xyz/api/getMail?email={email}')
+                response = self.__session.get(f'https://api.cybertemp.xyz/getMail?email={email}')
                 if response.ok:
                     return response.json()
                 else:
@@ -108,7 +108,7 @@ class CyberTemp:
         """
         self.__debug_log("Getting domains")
         try:
-            response = self.__session.get(f"https://www.cybertemp.xyz/api/getDomains?type={type}")
+            response = self.__session.get(f"https://api.cybertemp.xyz/getDomains?type={type}")
             if response.ok:
                 return response.json()
             else:
@@ -121,7 +121,7 @@ class CyberTemp:
        
         self.__debug_log("Getting plan info")
         try:
-            response = self.__session.get("https://www.cybertemp.xyz/api/getPlan")
+            response = self.__session.get("https://api.cybertemp.xyz/getPlan")
             if response.ok:
                 return response.json()
             else:
@@ -157,7 +157,7 @@ class CyberTemp:
         """
         self.__debug_log(f"Deleting email with id {email_id}")
         try:
-            response = self.__session.delete(f"https://www.cybertemp.xyz/api/email/{email_id}")
+            response = self.__session.delete(f"https://api.cybertemp.xyz/email/{email_id}")
             if response.ok:
                 return True
             else:
@@ -173,7 +173,7 @@ class CyberTemp:
         """
         self.__debug_log(f"Deleting inbox {email_address}")
         try:
-            response = self.__session.delete(f"https://www.cybertemp.xyz/api/inbox/{email_address}")
+            response = self.__session.delete(f"https://api.cybertemp.xyz/inbox/{email_address}")
             if response.ok:
                 return True
             else:
@@ -188,7 +188,7 @@ class CyberTemp:
         """
         self.__debug_log("Listing user inboxes")
         try:
-            response = self.__session.get("https://www.cybertemp.xyz/api/user/inboxes")
+            response = self.__session.get("https://api.cybertemp.xyz/user/inboxes")
             if response.ok:
                 return response.json()
             else:
@@ -205,7 +205,7 @@ class CyberTemp:
         self.__debug_log(f"Deleting user inbox {inbox_address}")
         try:
             response = self.__session.delete(
-                "https://www.cybertemp.xyz/api/user/inboxes",
+                "https://api.cybertemp.xyz/user/inboxes",
                 json={"inbox_address": inbox_address},
                 headers={"Content-Type": "application/json", **self.__session.headers}
             )
@@ -224,7 +224,7 @@ class CyberTemp:
         self.__debug_log(f"Getting private emails for {email}")
         try:
             headers = {"Authorization": f"Bearer {bearer_token}"}
-            response = self.__session.get(f"https://www.cybertemp.xyz/api/private/emails?email={email}", headers=headers)
+            response = self.__session.get(f"https://api.cybertemp.xyz/private/emails?email={email}", headers=headers)
             if response.ok:
                 return response.json()
             else:
