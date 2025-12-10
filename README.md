@@ -69,9 +69,10 @@ plan = client.get_plan()
 success = client.delete_email("email_id_here")
 ```
 
-1. **Delete Inbox**
+1. **Delete Inbox** (Deprecated - use `delete_user_inbox` instead)
 
 ```py
+# This method now calls delete_user_inbox internally
 success = client.delete_inbox("test@cybertemp.xyz")
 ```
 
@@ -91,6 +92,14 @@ success = client.delete_user_inbox("test@cybertemp.xyz")
 
 ```py
 private_emails = client.get_private_emails(bearer_token="your_bearer_token", email="test@cybertemp.xyz")
+```
+
+1. **Check API Health**
+
+```py
+health = client.get_health()
+# Returns: {"status": "ok"} on success
+# Returns: {"error": "API unavailable", "reason": "..."} on error
 ```
 ```
 
@@ -149,16 +158,22 @@ All paid plans require an API key. See [CyberTemp Pricing](https://cybertemp.xyz
 ### 📜 ChangeLog
 
 ```diff
-v1.0.1 ⋮ 2025-03-05
+v0.1.0 ⋮ 2025-12-10
++ Added get_health() method for API health checks
+! Fixed delete_inbox() - now correctly uses /api/user/inboxes endpoint
+! Updated all API endpoints to use consistent base URL (api.cybertemp.xyz)
+! Deprecated delete_inbox() - now calls delete_user_inbox() internally
+
+v0.0.9 ⋮ 2025-03-05
 + Added configurable retry and delay options for email checking functions
 + Indicated optional parameters in documentation
 
-v1.0.0 ⋮ 2025-02-14
+v0.0.1 ⋮ 2025-02-14
 ! Initial release
 ```
 
 <p align="center">
-  <img src="https://img.shields.io/badge/python-3.7+-blue.svg"/>
+  <img src="https://img.shields.io/badge/python-3.8+-blue.svg"/>
   <img src="https://img.shields.io/badge/license-MIT-green.svg"/>
-  <img src="https://img.shields.io/badge/version-1.0.1-orange.svg"/>
+  <img src="https://img.shields.io/badge/version-0.1.0-orange.svg"/>
 </p>

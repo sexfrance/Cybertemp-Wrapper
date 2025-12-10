@@ -137,7 +137,7 @@ class CyberTemp:
         """
         self.__debug_log("Checking API health status")
         try:
-            response = self.__session.get("https://www.cybertemp.xyz/health")
+            response = self.__session.get("https://api.cybertemp.xyz/health")
             if response.status_code == 200:
                 return response.json()
             elif response.status_code == 500:
@@ -168,19 +168,13 @@ class CyberTemp:
 
     def delete_inbox(self, email_address: str) -> bool:
         """
-        DELETE /api/inbox/{emailAddress} - Deletes an entire inbox and all its emails.
+        DEPRECATED: Use delete_user_inbox instead.
+        DELETE /api/user/inboxes - Deletes an entire inbox and all its emails.
         Returns True if deleted, False otherwise.
+        
+        This method now calls delete_user_inbox internally.
         """
-        self.__debug_log(f"Deleting inbox {email_address}")
-        try:
-            response = self.__session.delete(f"https://api.cybertemp.xyz/inbox/{email_address}")
-            if response.ok:
-                return True
-            else:
-                self.__log.failure(f"Failed to delete inbox: {response.text}, {response.status_code}")
-        except Exception as error:
-            self.__log.failure(f"Error deleting inbox: {str(error)}")
-        return False
+        return self.delete_user_inbox(email_address)
 
     def list_user_inboxes(self) -> Optional[Dict]:
         """
