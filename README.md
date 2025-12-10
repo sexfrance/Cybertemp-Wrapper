@@ -101,13 +101,14 @@ health = client.get_health()
 # Returns: {"status": "ok"} on success
 # Returns: {"error": "API unavailable", "reason": "..."} on error
 ```
-```
+
+````
 
 1. **Get Available Domains**
 
 ```py
 domains = client.get_domains()
-```
+````
 
 4. **Search Email by Subject**
 
