@@ -169,12 +169,21 @@ class CyberTemp:
     def delete_inbox(self, email_address: str) -> bool:
         """
         DEPRECATED: Use delete_user_inbox instead.
-        DELETE /api/user/inboxes - Deletes an entire inbox and all its emails.
+        DELETE /api/inbox/{email} - Deletes an entire inbox and all its emails.
         Returns True if deleted, False otherwise.
         
-        This method now calls delete_user_inbox internally.
+        This method now uses the /api/inbox/{email} endpoint directly.
         """
-        return self.delete_user_inbox(email_address)
+        self.__debug_log(f"Deleting inbox {email_address}")
+        try:
+            response = self.__session.delete(f"https://api.cybertemp.xyz/inbox/{email_address}")
+            if response.ok:
+                return True
+            else:
+                self.__log.failure(f"Failed to delete inbox: {response.text}, {response.status_code}")
+        except Exception as error:
+            self.__log.failure(f"Error deleting inbox: {str(error)}")
+        return False
 
     def list_user_inboxes(self) -> Optional[Dict]:
         """
