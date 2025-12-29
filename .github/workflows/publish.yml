@@ -1,6 +1,9 @@
 name: Publish to PyPI
 
 on:
+  push:           # Trigger on every push
+    branches:
+      - main      # or the branch you want to trigger on
   release:
     types: [published]
   workflow_dispatch:
@@ -24,6 +27,7 @@ jobs:
         run: python -m build
       
       - name: Publish to PyPI
+        if: github.event_name != 'push' || contains(github.ref, 'refs/heads/main') # optional safety
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}

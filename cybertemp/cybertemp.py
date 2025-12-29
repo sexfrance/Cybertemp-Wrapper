@@ -102,15 +102,52 @@ class CyberTemp:
                     return message
         return None
 
-    def get_domains(self, type: str = None) -> Optional[List[str]]:
+    def get_domains(
+        self,
+        limit: int = 15,
+        offset: int = 0,
+        type: Optional[str] = None,
+        search: Optional[str] = None,
+        tld_include: Optional[str] = None,
+        tld_exclude: Optional[str] = None,
+    ) -> Optional[Dict]:
         """
-        GET /api/getDomains - Fetch all available email domains.
+        GET /api/getDomains - Lists available email domains.
+
+        Parameters:
+        - limit: Number of domains to return (default 15, max 100)
+        - offset: Number of domains to skip for pagination (default 0)
+        - type: Optional domain type filter (e.g., 'discord')
+        - search: Optional lookup; may return 404 if private or not found
+        - tld_include: Comma-separated TLDs to include (e.g. 'com,net')
+        - tld_exclude: Comma-separated TLDs to exclude (e.g. 'xyz,info')
+
+        Returns:
+        - dict with keys `domains` (list) and `total` (int) on success, otherwise None.
         """
         self.__debug_log("Getting domains")
         try:
-            response = self.__session.get(f"https://api.cybertemp.xyz/getDomains?type={type}")
+            # sanity-check limit bounds
+            if limit < 1:
+                limit = 1
+            if limit > 100:
+                limit = 100
+
+            params = {"limit": limit, "offset": offset}
+            if type:
+                params["type"] = type
+            if search:
+                params["search"] = search
+            if tld_include:
+                params["tld_include"] = tld_include
+            if tld_exclude:
+                params["tld_exclude"] = tld_exclude
+
+            response = self.__session.get("https://api.cybertemp.xyz/getDomains", params=params)
             if response.ok:
                 return response.json()
+            elif response.status_code == 404:
+                self.__log.failure(f"Domains not found or private: {response.text}, {response.status_code}")
             else:
                 self.__log.failure(f"Failed to get domains: {response.text}, {response.status_code}")
         except Exception as error:
