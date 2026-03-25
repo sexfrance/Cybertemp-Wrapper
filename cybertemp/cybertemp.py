@@ -7,7 +7,7 @@ from typing import Optional, List, Dict, Union, Callable
 from logmagix import Logger
 
 class CyberTemp:
-    def __init__(self, api_key: str, debug: bool = True) -> None:
+    def __init__(self, api_key: str, debug: bool = False) -> None:
         if not api_key:
             raise ValueError("API key is required. Get one at https://cybertemp.xyz/pricing")
         self.__debug = debug
